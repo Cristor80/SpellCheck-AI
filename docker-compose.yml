@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  # ==========================================
+  # Backend - Node.js + Express
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spellcheck-backend
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      FRONTEND_URL: http://frontend:80
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GOOGLE_MODEL: ${GOOGLE_MODEL:-gemini-2.0-flash}
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-5242880}
+      MAX_TEXT_LENGTH: ${MAX_TEXT_LENGTH:-10000}
+      UPLOAD_DIR: uploads
+      ALLOWED_ORIGINS: "http://frontend:80,http://localhost:80,http://localhost:5000"
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      RATE_LIMIT_MAX_UPLOADS: 20
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/.env:/app/.env:ro
+    restart: unless-stopped
+    networks:
+      - spellcheck-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+
+  # ==========================================
+  # Frontend - Nginx + Static Files
+  # ==========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: spellcheck-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - spellcheck-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - BACKEND_URL=http://backend:5000
+
+networks:
+  spellcheck-network:
+    driver: bridge
+
+volumes:
+  backend-uploads:
+    driver: local
