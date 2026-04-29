@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpellCheck Pro AI - Corrector Inteligente</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✍️ SpellCheck Pro AI</h1>
+            <p>Corrección Inteligente de Documentos con IA</p>
+        </header>
+
+        <main>
+            <div class="layout">
+                <!-- Panel Principal -->
+                <div class="main-panel">
+                    <!-- Sección 1: Texto Directo -->
+                    <section class="input-section">
+                        <h2>1️⃣ Ingresa tu texto</h2>
+                        <textarea 
+                            id="inputText" 
+                            placeholder="Escribe o pega el texto que deseas verificar aquí..."
+                            rows="8"></textarea>
+                        <button id="checkBtn" class="btn btn-primary">
+                            <span>🤖 Corregir con IA</span>
+                        </button>
+                    </section>
+
+                    <!-- Sección 2: Cargar Archivo -->
+                    <section class="upload-section">
+                        <h2>2️⃣ O carga un documento</h2>
+                        
+                        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Área para subir archivo">
+                            <input type="file" id="fileInput" accept="text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf" class="hidden">
+                            <div class="dropzone-content">
+                                <span class="folder-icon">📂</span>
+                                <span id="dropzoneText">Haz clic o arrastra un archivo (.txt, .docx, .pdf)</span>
+                            </div>
+                        </div>
+
+                        <div id="filePreview" class="file-preview hidden">
+                            <span class="file-name" id="fileName">documento.docx</span>
+                            <button id="removeFileBtn" class="btn-remove" aria-label="Eliminar archivo">✕</button>
+                        </div>
+
+                        <button id="uploadBtn" class="btn btn-primary" disabled>
+                            <span id="btnText">⬆️ Subir y Analizar</span>
+                            <div id="btnSpinner" class="btn-spinner hidden"></div>
+                        </button>
+                    </section>
+                </div>
+
+                <!-- Panel Lateral -->
+                <aside class="side-panel">
+                    <div class="panel-badge">⚡ IA Inteligente</div>
+                    <h3>Características</h3>
+                    <ul>
+                        <li><strong>📝</strong> Corrección de ortografía</li>
+                        <li><strong>✨</strong> Mejora de redacción</li>
+                        <li><strong>💾</strong> Descarga .txt o .docx corregido</li>
+                        <li><strong>🚀</strong> Respuesta instantánea con Gemini 2.5 Flash</li>
+                    </ul>
+                    
+                    <!-- Banner de Anuncios -->
+                    <div class="ad-banner">
+                        <h4>Patrocinado</h4>
+                        <div id="ad-content">
+                            <!-- Aquí se insertará el código de anuncios -->
+                            <p>Espacio para anuncios</p>
+                            <!-- Ejemplo de Google AdSense (reemplaza con tu código real) -->
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                                 data-ad-slot="XXXXXXXXXX"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                 (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Indicador de Carga -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>La IA está analizando tu documento...</p>
+                
+                <!-- Anuncio durante análisis -->
+                <div class="loading-ad hidden" id="loadingAd">
+                    <h4>Patrocinado</h4>
+                    <div class="ad-content">
+                        <!-- Código de anuncio aquí -->
+                        <p>Espacio para anuncio</p>
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                             data-ad-slot="XXXXXXXXXX"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Resultados -->
+            <section class="results-section hidden" id="resultsSection">
+                <h2>📊 Resultados</h2>
+                
+                <div id="fileInfo" class="file-info hidden"></div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-label">Caracteres originales</span>
+                        <span id="charCountOriginal" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Caracteres corregidos</span>
+                        <span id="charCountCorrected" class="stat-value">0</span>
+                    </div>
+                </div>
+
+                <div class="export-buttons">
+                    <button onclick="downloadTxt()" class="btn btn-export-txt">📄 Descargar .txt</button>
+                    <button onclick="downloadDocx()" class="btn btn-export-docx">📘 Descargar .docx</button>
+                </div>
+
+                <h3>Texto Original</h3>
+                <div id="originalText" class="text-display"></div>
+
+                <h3>Texto Corregido</h3>
+                <div id="correctedText" class="text-display highlight"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 SpellCheck Pro AI - Powered by Gemini API</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
